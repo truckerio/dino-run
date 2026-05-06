@@ -802,7 +802,7 @@
       const runnerSpeed = this.obstacleSpeed();
       const obstaclesActive = currentState === STATES.PLAYER_ACTIVE || this.autoModeActive();
 
-      backgroundSystem?.update(dt, runnerSpeed, this.gameOver);
+      backgroundSystem?.update(dt, runnerSpeed, this.gameOver || !obstaclesActive);
 
       if (!this.gameOver && obstaclesActive) {
         this.spawnTimer -= delta;
@@ -847,6 +847,10 @@
 
     autoModeActive() {
       return !phoneMode && currentState !== STATES.PLAYER_ACTIVE;
+    }
+
+    phoneWaitingForPlayer() {
+      return phoneMode && (currentState === STATES.IDLE_DEMO || currentState === STATES.WAITING_FOR_PLAYER);
     }
 
     obstacleSpeed() {
@@ -1090,6 +1094,9 @@
       if (this.gameOver) {
         this.setDinoStillTexture(this.dinoDeadTextureKey());
         this.setDinoNightStillTexture(this.dinoNightDeadTextureKey());
+      } else if (this.phoneWaitingForPlayer()) {
+        this.setDinoStillTexture(this.dinoRunAnimKey());
+        this.setDinoNightStillTexture(this.dinoNightRunAnimKey());
       } else if (this.velocityY !== 0 || this.dino.y < this.dinoFloorY() - 0.5) {
         this.setDinoStillTexture(this.dinoJumpTextureKey());
         this.setDinoNightStillTexture(this.dinoNightJumpTextureKey());
