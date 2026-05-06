@@ -37,6 +37,7 @@ io.use((socket, next) => {
 app.set("trust proxy", true);
 app.use(express.json({ limit: "32kb" }));
 app.use(requireLanAccess);
+app.get(["/controller", "/controller/"], (_req, res) => res.sendFile(path.join(publicDir, "play", "index.html")));
 app.use(express.static(publicDir));
 app.use("/vendor", express.static(phaserDir));
 
@@ -56,7 +57,6 @@ app.get("/config.js", (_req, res) => {
 });
 app.get("/", (_req, res) => res.redirect(`/play?room=${DEFAULT_ROOM}`));
 app.get("/play", (_req, res) => res.sendFile(path.join(publicDir, "play", "index.html")));
-app.get("/controller", (_req, res) => res.sendFile(path.join(publicDir, "controller", "index.html")));
 
 app.get("/api/high-scores", (req, res) => {
   const limit = clampLimit(req.query.limit, 10, 50);

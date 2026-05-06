@@ -8,6 +8,7 @@
 
   const params = new URLSearchParams(window.location.search);
   const room = params.get("room") || "painting-01";
+  const phoneMode = params.has("phone") || window.location.pathname.startsWith("/controller");
   const debugJetTest = params.has("jetTest");
   const debugStackTest = params.has("stackTest");
   const socket = io();
@@ -18,6 +19,9 @@
   const controllerUrlEl = document.getElementById("controller-url");
   const statusLine = document.getElementById("status-line");
   const playerLine = document.getElementById("player-line");
+  const phoneStartForm = document.getElementById("phone-start");
+  const phonePlayerNameInput = document.getElementById("phone-player-name");
+  const phoneStartButton = phoneStartForm?.querySelector("button");
   const playerNameEl = document.getElementById("player-name");
   const hiScoreEl = document.getElementById("hi-score");
   const scoreEl = document.getElementById("score");
@@ -33,6 +37,8 @@
   const landmarkLayerEl = document.getElementById("landmarkLayer");
   const horizonLineEl = document.getElementById("horizonLine");
   const groundLayerEl = document.getElementById("groundLayer");
+
+  document.body.classList.toggle("phone-mode", phoneMode);
 
   const appConfig = window.__DINO_RUN_CONFIG__ || {};
   if (appConfig.gameAreaWidth) document.documentElement.style.setProperty("--game-area-width", appConfig.gameAreaWidth);
@@ -332,15 +338,18 @@
     if (state === STATES.IDLE_DEMO) {
       activePlayerName = "";
       score = 0;
-      statusLine.textContent = "IDLE DEMO";
-      playerLine.textContent = "";
+      statusLine.textContent = phoneMode ? "PLAY ON THIS PHONE" : "IDLE DEMO";
+      playerLine.textContent = phoneMode ? "TAP TO JUMP. SWIPE DOWN TO DUCK." : "";
       playerNameEl.textContent = "";
       scoreEl.textContent = formatScore(0);
+      phoneStartForm?.classList.toggle("hidden", !phoneMode);
+      if (phoneStartButton) phoneStartButton.textContent = "START";
     }
 
     if (state === STATES.WAITING_FOR_PLAYER) {
       statusLine.textContent = "PLAYER CONNECTED";
       playerLine.textContent = "ENTER YOUR NAME ON PHONE";
+      phoneStartForm?.classList.add("hidden");
     }
 
     if (state === STATES.PLAYER_ACTIVE) {
@@ -350,15 +359,18 @@
       playerLine.textContent = "";
       playerNameEl.textContent = activePlayerName.toUpperCase();
       scoreEl.textContent = formatScore(0);
+      phoneStartForm?.classList.add("hidden");
     }
 
     if (state === STATES.GAME_OVER) {
       statusLine.textContent = "GAME OVER";
-      playerLine.textContent = "";
+      playerLine.textContent = phoneMode ? "PLAY AGAIN WHEN READY." : "";
       playerNameEl.textContent = (payload.playerName || activePlayerName || "PLAYER").toUpperCase();
       scoreEl.textContent = formatScore(payload.score || score);
       gameOverEl.classList.remove("hidden");
       finalLineEl.textContent = `${playerNameEl.textContent} ${formatScore(payload.score || score)}`;
+      phoneStartForm?.classList.toggle("hidden", !phoneMode);
+      if (phoneStartButton) phoneStartButton.textContent = "PLAY AGAIN";
     }
   }
 
@@ -1529,6 +1541,73 @@
       sceneRef?.setDuck(false);
     }
   });
+
+  function startLocalPhoneGame() {
+    const playerName = phonePlayerNameInput?.value?.trim() || "PLAYER";
+    sceneRef?.startPlayer(playerName);
+  }
+
+  phoneStartForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    startLocalPhoneGame();
+  });
+
+  if (phoneMode) {
+    let activePointerId = null;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let duckGestureActive = false;
+    let pendingTapJump = null;
+
+    const clearPendingTapJump = () => {
+      if (!pendingTapJump) return;
+      window.clearTimeout(pendingTapJump);
+      pendingTapJump = null;
+    };
+
+    const canUsePhoneControls = () => currentState === STATES.PLAYER_ACTIVE && sceneRef && !sceneRef.gameOver;
+
+    gameFrameEl.addEventListener("pointerdown", (event) => {
+      if (!canUsePhoneControls()) return;
+      activePointerId = event.pointerId;
+      touchStartX = event.clientX;
+      touchStartY = event.clientY;
+      duckGestureActive = false;
+      gameFrameEl.setPointerCapture?.(event.pointerId);
+      clearPendingTapJump();
+      pendingTapJump = window.setTimeout(() => {
+        pendingTapJump = null;
+        if (!duckGestureActive && canUsePhoneControls()) sceneRef?.requestJump();
+      }, 55);
+    });
+
+    gameFrameEl.addEventListener("pointermove", (event) => {
+      if (event.pointerId !== activePointerId || !canUsePhoneControls()) return;
+      const deltaY = event.clientY - touchStartY;
+      const deltaX = Math.abs(event.clientX - touchStartX);
+      if (deltaY > 30 && deltaY > deltaX * 1.2) {
+        clearPendingTapJump();
+        duckGestureActive = true;
+        sceneRef?.setDuck(true);
+      }
+    });
+
+    const finishPhonePointer = (event) => {
+      if (event.pointerId !== activePointerId) return;
+      clearPendingTapJump();
+      if (duckGestureActive) {
+        sceneRef?.setDuck(false);
+      } else if (canUsePhoneControls()) {
+        sceneRef?.requestJump();
+      }
+      activePointerId = null;
+      duckGestureActive = false;
+    };
+
+    gameFrameEl.addEventListener("pointerup", finishPhonePointer);
+    gameFrameEl.addEventListener("pointercancel", finishPhonePointer);
+    gameFrameEl.addEventListener("contextmenu", (event) => event.preventDefault());
+  }
 
   socket.emit("game_join", { room });
 

@@ -8,6 +8,8 @@ body {
   color: #111;
   font-family: "Courier New", Courier, monospace;
   image-rendering: pixelated;
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
 }
 
 :root {
@@ -107,6 +109,35 @@ img {
   font-weight: 400;
 }
 
+.phone-start {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  pointer-events: auto;
+}
+
+.phone-start input,
+.phone-start button {
+  min-height: 42px;
+  border: 2px solid #111;
+  border-radius: 0;
+  font: inherit;
+  font-weight: 700;
+}
+
+.phone-start input {
+  width: min(48vw, 230px);
+  padding: 0 10px;
+  background: #fff;
+  color: #111;
+}
+
+.phone-start button {
+  padding: 0 14px;
+  background: #111;
+  color: #fff;
+}
+
 #stage-shell {
   width: min(100vw, var(--game-area-width));
   height: min(100vh, var(--game-area-height));
@@ -125,6 +156,33 @@ img {
   overflow: hidden;
   background: #f6f4ee;
   --game-ui-color: #151515;
+  touch-action: none;
+}
+
+body.phone-mode #screen::after {
+  display: none;
+}
+
+body.phone-mode .connect-panel {
+  height: 24vh;
+  flex-basis: 24vh;
+  pointer-events: auto;
+}
+
+body.phone-mode #qr,
+body.phone-mode .scan,
+body.phone-mode .url {
+  display: none;
+}
+
+body.phone-mode #stage-shell {
+  width: 100vw;
+  height: 76vh;
+  flex-basis: 76vh;
+}
+
+body.phone-mode #game-frame {
+  width: 100%;
 }
 
 #sky,
@@ -471,7 +529,7 @@ img {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 @media (max-width: 720px) {
@@ -495,6 +553,12 @@ img {
     min-width: 0;
     gap: 12px;
     font-size: 13px;
+  }
+
+  .phone-start {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    width: calc(100vw - 20px);
   }
 }
 
