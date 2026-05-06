@@ -43,7 +43,7 @@
     if (now - lastJump < 80) return;
     lastJump = now;
     navigator.vibrate?.(20);
-    socket.emit("jump", { room });
+    socket.emit("jump", { room, sentAt: Date.now() });
   }
 
   function startDuck(event) {
@@ -72,14 +72,22 @@
     socket.emit("player_start", { room, name: playerName });
   });
 
-  jumpPad.addEventListener("touchstart", sendJump, { passive: false });
-  jumpPad.addEventListener("mousedown", sendJump);
-  duckPad.addEventListener("touchstart", startDuck, { passive: false });
-  duckPad.addEventListener("touchend", endDuck, { passive: false });
-  duckPad.addEventListener("touchcancel", endDuck, { passive: false });
-  duckPad.addEventListener("mousedown", startDuck);
-  duckPad.addEventListener("mouseup", endDuck);
-  duckPad.addEventListener("mouseleave", endDuck);
+  if (window.PointerEvent) {
+    jumpPad.addEventListener("pointerdown", sendJump);
+    duckPad.addEventListener("pointerdown", startDuck);
+    duckPad.addEventListener("pointerup", endDuck);
+    duckPad.addEventListener("pointercancel", endDuck);
+    duckPad.addEventListener("pointerleave", endDuck);
+  } else {
+    jumpPad.addEventListener("touchstart", sendJump, { passive: false });
+    jumpPad.addEventListener("mousedown", sendJump);
+    duckPad.addEventListener("touchstart", startDuck, { passive: false });
+    duckPad.addEventListener("touchend", endDuck, { passive: false });
+    duckPad.addEventListener("touchcancel", endDuck, { passive: false });
+    duckPad.addEventListener("mousedown", startDuck);
+    duckPad.addEventListener("mouseup", endDuck);
+    duckPad.addEventListener("mouseleave", endDuck);
+  }
 
   restartButton.addEventListener("click", () => {
     socket.emit("restart", { room });

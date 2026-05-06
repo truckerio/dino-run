@@ -25,6 +25,8 @@ Scores and player history are stored server-side in `DATA_DIR`, defaulting to `.
 - `CONTROL_PANEL_HEIGHT`: CSS length for the QR/controller panel above the game. Default: `20vh`.
 - `DATA_DIR`: folder where server-side score history is stored. Default: `./data`.
 - `LAN_ONLY`: set to `true` or `1` when hosting on a local PC/Raspberry Pi to reject non-private-network visitors.
+- `JUMP_COLLISION_GRACE_MS`: controller latency forgiveness for jump-cleared obstacles. Default: `190`.
+- `JUMP_START_SHIELD_MS`: short shield after a remote jump starts, so collision does not win in the same frame. Default: `120`.
 
 `LAN_ONLY` is for local network hosting. Railway runs on the public internet, so use a private/unshared URL or a future access code if the Railway deployment should be restricted.
 

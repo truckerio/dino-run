@@ -100,6 +100,10 @@
       velocity: 700,
       gravity: 2200
     },
+    input: {
+      jumpCollisionGraceMs: 190,
+      jumpStartShieldMs: 120
+    },
     demo: {
       jumpTimeWindowSec: 0.32,
       emergencyTimeWindowSec: 0.12,
@@ -209,6 +213,12 @@
       moonSize: 40
     }
   };
+  if (Number.isFinite(Number(appConfig.jumpCollisionGraceMs))) {
+    TUNING.input.jumpCollisionGraceMs = Number(appConfig.jumpCollisionGraceMs);
+  }
+  if (Number.isFinite(Number(appConfig.jumpStartShieldMs))) {
+    TUNING.input.jumpStartShieldMs = Number(appConfig.jumpStartShieldMs);
+  }
 
   const landmarks = [
     { name: "great-wall", daySrc: "/assets/wonders/day/great-wall.png", nightSrc: "/assets/wonders/night/great-wall.png", widthRatio: 0.33, yOffset: 0, spacingAfterMin: 1700, spacingAfterMax: 2150 },
@@ -767,6 +777,8 @@
       this.gameOverResetAt = 0;
       this.lastObstacleKind = null;
       this.jetTestLaneIndex = 0;
+      this.lastJumpInputAt = 0;
+      this.jumpStartShieldUntil = 0;
 
       this.scale.on("resize", () => this.reflow());
       setState(STATES.IDLE_DEMO);
@@ -1006,11 +1018,14 @@
       return (this.obstacles?.getChildren?.().length || 0) < TUNING.demo.maxObstaclesOnScreen;
     }
 
-    requestJump() {
+    requestJump(options = {}) {
+      const now = performance.now();
+      if (options.recordInput !== false) this.lastJumpInputAt = now;
       if (!this.dino || this.gameOver) return false;
       if (this.velocityY !== 0 || this.dino.y < this.dinoFloorY() - 0.5) return false;
       this.setDuck(false);
       this.velocityY = -TUNING.jump.velocity;
+      this.jumpStartShieldUntil = now + TUNING.input.jumpStartShieldMs;
       this.setDinoStillTexture(this.dinoJumpTextureKey());
       this.dino.anims.stop();
       return true;
@@ -1246,13 +1261,25 @@
       if (!this.dino) return;
       const dinoBox = this.dinoHitbox();
       let collided = false;
+      const now = performance.now();
       this.obstacles.children.each((obstacle) => {
         if (collided) return;
         if (Phaser.Geom.Intersects.RectangleToRectangle(dinoBox, this.obstacleHitbox(obstacle))) {
+          if (this.shouldForgiveJumpCollision(obstacle, now)) return;
           collided = true;
         }
       });
       if (collided) this.handleGameOver(time);
+    }
+
+    shouldForgiveJumpCollision(obstacle, now) {
+      if (currentState !== STATES.PLAYER_ACTIVE || this.isDucking) return false;
+      const jumpClearsObstacle = obstacle.obstacleKind !== "jet" || obstacle.jetLane?.response === "jump";
+      if (!jumpClearsObstacle) return false;
+      if (now <= this.jumpStartShieldUntil && this.velocityY < 0) return true;
+      if (now - this.lastJumpInputAt > TUNING.input.jumpCollisionGraceMs) return false;
+      if (this.velocityY === 0) return this.requestJump({ recordInput: false });
+      return this.velocityY < 0;
     }
 
     handleGameOver(time) {
@@ -1427,6 +1454,8 @@
       this.spawnTimer = TUNING.obstacle.startSpawnMs;
       this.lastObstacleKind = null;
       this.jetTestLaneIndex = 0;
+      this.lastJumpInputAt = 0;
+      this.jumpStartShieldUntil = 0;
       this.playDinoRun();
       this.reflow();
     }
@@ -1442,6 +1471,8 @@
       this.gameOverResetAt = 0;
       this.lastObstacleKind = null;
       this.jetTestLaneIndex = 0;
+      this.lastJumpInputAt = 0;
+      this.jumpStartShieldUntil = 0;
       this.playDinoRun();
       this.reflow();
     }
@@ -1516,7 +1547,7 @@
   });
 
   socket.on("jump", () => {
-    if (currentState === STATES.PLAYER_ACTIVE) sceneRef?.requestJump();
+    if (currentState === STATES.PLAYER_ACTIVE) sceneRef?.requestJump({ source: "remote" });
   });
 
   socket.on("duck_start", () => {

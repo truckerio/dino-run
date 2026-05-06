@@ -15,6 +15,8 @@ const LAN_ONLY = process.env.LAN_ONLY === "1" || process.env.LAN_ONLY === "true"
 const GAME_AREA_WIDTH = cleanCssLength(process.env.GAME_AREA_WIDTH, "100vw");
 const GAME_AREA_HEIGHT = cleanCssLength(process.env.GAME_AREA_HEIGHT, "60vh");
 const CONTROL_PANEL_HEIGHT = cleanCssLength(process.env.CONTROL_PANEL_HEIGHT, "20vh");
+const JUMP_COLLISION_GRACE_MS = cleanNumber(process.env.JUMP_COLLISION_GRACE_MS, 190, 0, 350);
+const JUMP_START_SHIELD_MS = cleanNumber(process.env.JUMP_START_SHIELD_MS, 120, 0, 250);
 
 const app = express();
 const server = http.createServer(app);
@@ -46,6 +48,8 @@ app.get("/config.js", (_req, res) => {
       gameAreaWidth: GAME_AREA_WIDTH,
       gameAreaHeight: GAME_AREA_HEIGHT,
       controlPanelHeight: CONTROL_PANEL_HEIGHT,
+      jumpCollisionGraceMs: JUMP_COLLISION_GRACE_MS,
+      jumpStartShieldMs: JUMP_START_SHIELD_MS,
       lanOnly: LAN_ONLY
     })};`
   );
@@ -106,6 +110,12 @@ function cleanCssLength(value, fallback) {
   if (/^(?:\d+(?:\.\d+)?)(?:px|vh|vw|vmin|vmax|%)$/.test(raw)) return raw;
   if (/^\d+(?:\.\d+)?$/.test(raw)) return `${raw}px`;
   return fallback;
+}
+
+function cleanNumber(value, fallback, min, max) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return fallback;
+  return Math.max(min, Math.min(max, parsed));
 }
 
 function isPrivateIp(ip) {
@@ -262,11 +272,15 @@ io.on("connection", (socket) => {
     emitStatus(clean);
   });
 
-  socket.on("jump", ({ room } = {}) => {
+  socket.on("jump", ({ room, sentAt } = {}) => {
     const clean = cleanRoom(room || socket.data.room);
     const state = roomState(clean);
     if (state.activePlayerSocketId === socket.id) {
-      io.to(clean).emit("jump", { playerId: socket.id });
+      io.to(clean).emit("jump", {
+        playerId: socket.id,
+        controllerSentAt: Number(sentAt) || null,
+        serverReceivedAt: Date.now()
+      });
     }
   });
 
