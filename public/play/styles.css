@@ -109,6 +109,11 @@ img {
   font-weight: 400;
 }
 
+body:not(.phone-mode) .url,
+body:not(.phone-mode) .status {
+  display: none;
+}
+
 .phone-start {
   display: flex;
   gap: 8px;
