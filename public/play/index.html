@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>World Runner</title>
+    <link rel="stylesheet" href="/play/styles.css" />
+    <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+  </head>
+  <body>
+    <main id="screen">
+      <section id="idle-panel" class="connect-panel">
+        <div class="title">WORLD RUNNER</div>
+        <div class="qr-block">
+          <img id="qr" src="/assets/ui/qr-placeholder.png" alt="Controller QR code" />
+          <div>
+            <div class="scan">SCAN TO PLAY</div>
+            <div id="controller-url" class="url"></div>
+            <div id="status-panel" class="status">
+              <div id="status-line"></div>
+              <div id="player-line"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="stage-shell">
+        <section id="game-frame" aria-label="World Runner game">
+          <div id="sky" class="sky-default">
+            <div id="starField"></div>
+            <div id="sun"></div>
+            <div id="moon"></div>
+          </div>
+          <div id="farLayer" class="scroll-layer"></div>
+          <div id="landmarkLayer" class="scroll-layer"></div>
+          <div id="horizonLine"></div>
+          <div id="groundLayer"></div>
+          <div id="game"></div>
+          <section id="score-panel" class="score">
+            <span id="player-name"></span>
+            <span>HI <span id="hi-score">00000</span></span>
+            <span id="score">00000</span>
+          </section>
+          <section id="game-over" class="game-over hidden">
+            <div>GAME OVER</div>
+            <small id="final-line"></small>
+          </section>
+        </section>
+      </section>
+    </main>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/vendor/phaser.min.js"></script>
+    <script src="/play/game.js?v=jet-obstacles-1"></script>
+  </body>
+</html>

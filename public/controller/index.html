@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>World Runner Controller</title>
+    <link rel="stylesheet" href="/controller/styles.css" />
+  </head>
+  <body>
+    <main id="app">
+      <section id="start-view" class="view">
+        <div class="brand">WORLD RUNNER</div>
+        <p id="room-line">ROOM painting-01</p>
+        <input id="name" maxlength="18" autocomplete="name" placeholder="Enter your name" />
+        <button id="start">START</button>
+        <p id="message"></p>
+      </section>
+
+      <section id="play-view" class="view hidden">
+        <section id="control-pad">
+          <button id="jump-pad" aria-label="Tap to jump">
+            <span>TAP TO JUMP</span>
+          </button>
+          <button id="duck-pad" aria-label="Hold to duck">
+            <span>HOLD TO DUCK</span>
+          </button>
+        </section>
+        <footer>
+          <button id="restart">RESTART</button>
+          <button id="end">END</button>
+        </footer>
+      </section>
+
+      <section id="busy-view" class="view hidden">
+        <div class="brand">WORLD RUNNER</div>
+        <p>Someone is playing right now. Please wait.</p>
+      </section>
+
+      <section id="game-over-view" class="view hidden">
+        <div class="brand">GAME OVER</div>
+        <p id="final-score">00000</p>
+        <button id="again">PLAY AGAIN</button>
+      </section>
+    </main>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/controller/controller.js?v=phase1-duck-1"></script>
+  </body>
+</html>

@@ -1,0 +1,503 @@
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #ffffff;
+  color: #111;
+  font-family: "Courier New", Courier, monospace;
+  image-rendering: pixelated;
+}
+
+* {
+  box-sizing: border-box;
+  user-select: none;
+  margin:0;
+  padding: 0;
+}
+
+#screen {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background: #ffffff;
+}
+
+#screen::after {
+  content: "";
+  flex: 0 0 20vh;
+  width: 100vw;
+}
+
+canvas,
+img {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.connect-panel {
+  width: 100vw;
+  height: 20vh;
+  flex: 0 0 20vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 18px;
+  padding: clamp(10px, 2vh, 24px) 0 0 clamp(14px, 2vw, 32px);
+  color: #111;
+  pointer-events: none;
+  z-index: 120;
+}
+
+.title {
+  display: none;
+}
+
+.qr-block {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: clamp(8px, 1vw, 14px);
+  min-width: 0;
+}
+
+#qr {
+  width: clamp(58px, 12vh, 116px);
+  height: clamp(58px, 12vh, 116px);
+  border: 2px solid #111;
+  background: #ffffff;
+}
+
+.scan {
+  padding-top: 4px;
+  font-size: clamp(12px, 1.6vh, 18px);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.url {
+  max-width: min(46vw, 560px);
+  margin-top: 5px;
+  overflow-wrap: anywhere;
+  color: #555;
+  font-size: clamp(9px, 0.75vw, 12px);
+  line-height: 1.25;
+}
+
+.status {
+  margin-top: 6px;
+  font-size: clamp(10px, 0.85vw, 13px);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.status div + div {
+  margin-top: 3px;
+  color: #555;
+  font-weight: 400;
+}
+
+#stage-shell {
+  width: 100vw;
+  height: 60vh;
+  flex: 0 0 60vh;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+#game-frame {
+  position: relative;
+  width: 100vw;
+  height: 100%;
+  overflow: hidden;
+  background: #f6f4ee;
+  --game-ui-color: #151515;
+}
+
+#sky,
+#farLayer,
+#landmarkLayer,
+#horizonLine,
+#groundLayer,
+#game {
+  position: absolute;
+  inset: 0;
+}
+
+#sky {
+  z-index: 0;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+#starField,
+#sun,
+#moon {
+  position: absolute;
+  pointer-events: none;
+  display: block;
+}
+
+#starField {
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+}
+
+.sky-star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: rgba(245, 245, 245, 0.9);
+  box-shadow: 0 0 5px rgba(245, 245, 245, 0.42);
+  animation: starPulse 2.6s ease-in-out infinite;
+}
+
+#sun,
+#moon {
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  image-rendering: pixelated;
+  opacity: 0;
+  transition: opacity 900ms ease;
+}
+
+#sun {
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+#sun::before,
+#sun::after {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  left: 0;
+  top: 0;
+  image-rendering: pixelated;
+}
+
+#sun::before {
+  background: transparent;
+  box-shadow:
+    20px 0 #8f8f8f,
+    8px 4px #8f8f8f,
+    32px 4px #8f8f8f,
+    16px 8px #8f8f8f,
+    20px 8px #8f8f8f,
+    24px 8px #7e7e7e,
+    4px 12px #8f8f8f,
+    12px 12px #8f8f8f,
+    16px 12px #9d9d9d,
+    20px 12px #9d9d9d,
+    24px 12px #7e7e7e,
+    28px 12px #6f6f6f,
+    36px 12px #7e7e7e,
+    8px 16px #8f8f8f,
+    12px 16px #9d9d9d,
+    16px 16px #9d9d9d,
+    20px 16px #9d9d9d,
+    24px 16px #7e7e7e,
+    28px 16px #6f6f6f,
+    0 20px #8f8f8f,
+    8px 20px #9d9d9d,
+    12px 20px #9d9d9d,
+    16px 20px #9d9d9d,
+    20px 20px #8f8f8f,
+    24px 20px #7e7e7e,
+    28px 20px #6f6f6f,
+    36px 20px #6f6f6f,
+    8px 24px #8f8f8f,
+    12px 24px #9d9d9d,
+    16px 24px #8f8f8f,
+    20px 24px #8f8f8f,
+    24px 24px #7e7e7e,
+    28px 24px #6f6f6f,
+    4px 28px #8f8f8f,
+    12px 28px #8f8f8f,
+    16px 28px #8f8f8f,
+    20px 28px #7e7e7e,
+    24px 28px #6f6f6f,
+    28px 28px #6f6f6f,
+    36px 28px #6f6f6f,
+    16px 32px #7e7e7e,
+    20px 32px #7e7e7e,
+    24px 32px #6f6f6f,
+    8px 36px #7e7e7e,
+    32px 36px #6f6f6f,
+    20px 40px #6f6f6f;
+}
+
+#sun::after {
+  background: transparent;
+  box-shadow:
+    20px 4px #c7c7c7,
+    12px 8px #c7c7c7,
+    28px 8px #5f5f5f,
+    4px 20px #c7c7c7,
+    32px 20px #5f5f5f,
+    12px 32px #777,
+    28px 32px #5f5f5f;
+}
+
+#moon {
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+#moon::before,
+#moon::after {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  left: 0;
+  top: 0;
+  image-rendering: pixelated;
+}
+
+#moon::before {
+  background: transparent;
+  box-shadow:
+    12px 0 #f4f4f4,
+    16px 0 #f4f4f4,
+    20px 0 #e7e7e7,
+    8px 4px #f4f4f4,
+    12px 4px #f4f4f4,
+    16px 4px #e7e7e7,
+    20px 4px #e7e7e7,
+    24px 4px #d0d0d0,
+    4px 8px #f4f4f4,
+    8px 8px #f4f4f4,
+    12px 8px #e7e7e7,
+    16px 8px #e7e7e7,
+    20px 8px #d0d0d0,
+    24px 8px #d0d0d0,
+    0 12px #f4f4f4,
+    4px 12px #f4f4f4,
+    8px 12px #e7e7e7,
+    12px 12px #e7e7e7,
+    16px 12px #d0d0d0,
+    20px 12px #d0d0d0,
+    0 16px #f4f4f4,
+    4px 16px #e7e7e7,
+    8px 16px #e7e7e7,
+    12px 16px #d0d0d0,
+    16px 16px #d0d0d0,
+    0 20px #e7e7e7,
+    4px 20px #e7e7e7,
+    8px 20px #d0d0d0,
+    12px 20px #d0d0d0,
+    16px 20px #bababa,
+    4px 24px #e7e7e7,
+    8px 24px #d0d0d0,
+    12px 24px #d0d0d0,
+    16px 24px #bababa,
+    20px 24px #bababa,
+    8px 28px #d0d0d0,
+    12px 28px #d0d0d0,
+    16px 28px #bababa,
+    20px 28px #bababa,
+    12px 32px #d0d0d0,
+    16px 32px #bababa;
+}
+
+#moon::after {
+  background: transparent;
+  box-shadow:
+    16px 8px #9e9e9e,
+    8px 12px #9e9e9e,
+    20px 16px #9e9e9e,
+    12px 20px #808080,
+    8px 24px #9e9e9e,
+    16px 28px #808080;
+}
+
+.scroll-layer {
+  overflow: hidden;
+}
+
+#farLayer {
+  z-index: 5;
+  pointer-events: none;
+  --cloud-opacity: 0.28;
+  --cloud-brightness: 0.58;
+  --cloud-contrast: 0.95;
+}
+
+#landmarkLayer {
+  z-index: 10;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 720ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+#landmarkLayer.is-transitioning {
+  opacity: 0.18;
+}
+
+#horizonLine {
+  z-index: 18;
+  pointer-events: none;
+  inset: auto 0 auto 0;
+  height: 1px;
+  background: rgba(17, 17, 17, 0.85);
+}
+
+#groundLayer {
+  z-index: 20;
+  pointer-events: none;
+  background-image: url("/assets/platform/ground-from-strip.png");
+  background-repeat: repeat-x;
+  background-position: 0 0;
+  background-size: auto 100%;
+  filter: none;
+  opacity: 1;
+}
+
+#game {
+  z-index: 30;
+}
+
+#game canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 30;
+  padding: none;
+}
+
+.far-cloud,
+.landmark {
+  position: absolute;
+  display: block;
+  height: auto;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.far-cloud {
+  opacity: var(--cloud-opacity);
+  filter: grayscale(1) brightness(var(--cloud-brightness)) contrast(var(--cloud-contrast));
+  object-fit: contain;
+  object-position: center;
+  transform-origin: center center;
+}
+
+.landmark {
+  transform-origin: bottom center;
+  -webkit-mask-image: linear-gradient(to top, transparent 0%, rgba(0, 0, 0, 0.72) 16%, rgba(0, 0, 0, 1) 30%);
+  mask-image: linear-gradient(to top, transparent 0%, rgba(0, 0, 0, 0.72) 16%, rgba(0, 0, 0, 1) 30%);
+  transition: opacity 720ms cubic-bezier(0.22, 0.61, 0.36, 1), filter 1100ms ease-in-out;
+}
+
+#landmarkLayer.variant-day .landmark {
+  mix-blend-mode: multiply;
+  opacity: 0.88;
+  filter: none;
+}
+
+#landmarkLayer.variant-night .landmark {
+  mix-blend-mode: screen;
+  opacity: 0.92;
+  filter: none;
+}
+
+.score {
+  position: absolute;
+  right: clamp(18px, 3vw, 42px);
+  top: clamp(14px, 2vw, 28px);
+  display: flex;
+  gap: clamp(12px, 2vw, 26px);
+  justify-content: flex-end;
+  align-items: center;
+  min-width: 240px;
+  font-size: clamp(13px, 1.35vw, 22px);
+  font-weight: 700;
+  color: var(--game-ui-color);
+  transition: color 900ms ease;
+  pointer-events: none;
+  z-index: 100;
+}
+
+#player-name {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.game-over {
+  position: absolute;
+  left: 50%;
+  top: 32%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  gap: 10px;
+  text-align: center;
+  font-size: clamp(24px, 4vw, 54px);
+  font-weight: 700;
+  color: var(--game-ui-color);
+  pointer-events: none;
+  z-index: 100;
+}
+
+.game-over small {
+  font-size: clamp(12px, 1.35vw, 20px);
+  color: var(--game-ui-color);
+  opacity: 0.78;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .connect-panel {
+    padding: 8px 0 0 10px;
+  }
+
+  .qr-block {
+    gap: 8px;
+  }
+
+  .url {
+    display: none;
+  }
+
+  #game-frame {
+    width: 100vw;
+  }
+
+  .score {
+    min-width: 0;
+    gap: 12px;
+    font-size: 13px;
+  }
+}
+
+@keyframes starPulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
