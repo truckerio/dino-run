@@ -338,8 +338,8 @@
     if (state === STATES.IDLE_DEMO) {
       activePlayerName = "";
       score = 0;
-      statusLine.textContent = phoneMode ? "PLAY ON THIS PHONE" : "IDLE DEMO";
-      playerLine.textContent = phoneMode ? "TAP TO JUMP. SWIPE DOWN TO DUCK." : "";
+      statusLine.textContent = phoneMode ? "ENTER YOUR NAME" : "IDLE DEMO";
+      playerLine.textContent = phoneMode ? "TAP TO JUMP, SWIPE TO DUCK." : "";
       playerNameEl.textContent = "";
       scoreEl.textContent = formatScore(0);
       phoneStartForm?.classList.toggle("hidden", !phoneMode);
