@@ -181,13 +181,15 @@ body.phone-mode .url {
 }
 
 body.phone-mode #stage-shell {
-  width: 100vw;
-  height: 76vh;
-  flex-basis: 76vh;
+  width: min(100vw, calc(100vh * 16 / 9));
+  height: auto;
+  aspect-ratio: 16 / 9;
+  flex: 0 0 auto;
 }
 
 body.phone-mode #game-frame {
   width: 100%;
+  height: 100%;
 }
 
 #sky,

@@ -332,6 +332,7 @@
   function setState(state, payload = {}) {
     currentState = state;
     idlePanel.classList.toggle("hidden", false);
+    idlePanel.classList.toggle("hidden", phoneMode && state === STATES.PLAYER_ACTIVE);
     gameOverEl.classList.add("hidden");
     finalLineEl.textContent = "";
 
