@@ -168,9 +168,16 @@ body.phone-mode #screen::after {
   display: none;
 }
 
+body.phone-mode #screen {
+  justify-content: center;
+}
+
 body.phone-mode .connect-panel {
-  height: 24vh;
-  flex-basis: 24vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: auto;
+  flex-basis: auto;
   pointer-events: auto;
 }
 
