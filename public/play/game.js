@@ -800,10 +800,11 @@
     update(time, delta) {
       const dt = delta / 1000;
       const runnerSpeed = this.obstacleSpeed();
+      const obstaclesActive = currentState === STATES.PLAYER_ACTIVE || this.autoModeActive();
 
       backgroundSystem?.update(dt, runnerSpeed, this.gameOver);
 
-      if (!this.gameOver) {
+      if (!this.gameOver && obstaclesActive) {
         this.spawnTimer -= delta;
         if (this.spawnTimer <= 0) {
           if (this.shouldSpawnObstacle()) this.spawnObstacle();
@@ -845,7 +846,7 @@
     }
 
     autoModeActive() {
-      return currentState !== STATES.PLAYER_ACTIVE;
+      return !phoneMode && currentState !== STATES.PLAYER_ACTIVE;
     }
 
     obstacleSpeed() {
