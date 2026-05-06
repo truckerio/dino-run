@@ -18,6 +18,16 @@ The server runs on `PORT=3000` by default.
 
 Scores and player history are stored server-side in `DATA_DIR`, defaulting to `./data` locally. On Railway, set `DATA_DIR` to the mounted persistent volume path so high scores survive deploys and restarts.
 
+## Runtime Variables
+
+- `GAME_AREA_WIDTH`: CSS length for the playable art area width. A plain number is treated as pixels. Default: `100vw`.
+- `GAME_AREA_HEIGHT`: CSS length for the playable art area height. A plain number is treated as pixels. Default: `60vh`.
+- `CONTROL_PANEL_HEIGHT`: CSS length for the QR/controller panel above the game. Default: `20vh`.
+- `DATA_DIR`: folder where server-side score history is stored. Default: `./data`.
+- `LAN_ONLY`: set to `true` or `1` when hosting on a local PC/Raspberry Pi to reject non-private-network visitors.
+
+`LAN_ONLY` is for local network hosting. Railway runs on the public internet, so use a private/unshared URL or a future access code if the Railway deployment should be restricted.
+
 ## Open Big Screen
 
 ```text

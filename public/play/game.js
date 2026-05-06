@@ -34,6 +34,11 @@
   const horizonLineEl = document.getElementById("horizonLine");
   const groundLayerEl = document.getElementById("groundLayer");
 
+  const appConfig = window.__DINO_RUN_CONFIG__ || {};
+  if (appConfig.gameAreaWidth) document.documentElement.style.setProperty("--game-area-width", appConfig.gameAreaWidth);
+  if (appConfig.gameAreaHeight) document.documentElement.style.setProperty("--game-area-height", appConfig.gameAreaHeight);
+  if (appConfig.controlPanelHeight) document.documentElement.style.setProperty("--control-panel-height", appConfig.controlPanelHeight);
+
   controllerUrlEl.textContent = controllerUrl;
   qr.src = `/qr?room=${encodeURIComponent(room)}&t=${Date.now()}`;
 

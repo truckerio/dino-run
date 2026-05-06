@@ -11,6 +11,10 @@ const DEFAULT_ROOM = "painting-01";
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, "data");
 const SCORES_FILE = path.join(DATA_DIR, "scores.json");
 const MAX_SCORES = 500;
+const LAN_ONLY = process.env.LAN_ONLY === "1" || process.env.LAN_ONLY === "true";
+const GAME_AREA_WIDTH = cleanCssLength(process.env.GAME_AREA_WIDTH, "100vw");
+const GAME_AREA_HEIGHT = cleanCssLength(process.env.GAME_AREA_HEIGHT, "60vh");
+const CONTROL_PANEL_HEIGHT = cleanCssLength(process.env.CONTROL_PANEL_HEIGHT, "20vh");
 
 const app = express();
 const server = http.createServer(app);
@@ -20,12 +24,32 @@ const publicDir = path.join(__dirname, "public");
 const phaserDir = path.join(__dirname, "node_modules", "phaser", "dist");
 const rooms = new Map();
 
+io.use((socket, next) => {
+  if (!LAN_ONLY) return next();
+  const forwarded = String(socket.handshake.headers["x-forwarded-for"] || "").split(",")[0].trim();
+  const ip = forwarded || socket.handshake.address;
+  if (isPrivateIp(ip)) return next();
+  return next(new Error("Dino Run is only available on the local network."));
+});
+
+app.set("trust proxy", true);
 app.use(express.json({ limit: "32kb" }));
+app.use(requireLanAccess);
 app.use(express.static(publicDir));
 app.use("/vendor", express.static(phaserDir));
 
 app.get("/favicon.ico", (_req, res) => res.status(204).end());
 app.get("/healthz", (_req, res) => res.json({ ok: true }));
+app.get("/config.js", (_req, res) => {
+  res.type("application/javascript").send(
+    `window.__DINO_RUN_CONFIG__=${JSON.stringify({
+      gameAreaWidth: GAME_AREA_WIDTH,
+      gameAreaHeight: GAME_AREA_HEIGHT,
+      controlPanelHeight: CONTROL_PANEL_HEIGHT,
+      lanOnly: LAN_ONLY
+    })};`
+  );
+});
 app.get("/", (_req, res) => res.redirect(`/play?room=${DEFAULT_ROOM}`));
 app.get("/play", (_req, res) => res.sendFile(path.join(publicDir, "play", "index.html")));
 app.get("/controller", (_req, res) => res.sendFile(path.join(publicDir, "controller", "index.html")));
@@ -74,6 +98,37 @@ app.get("/qr", async (req, res) => {
 function cleanRoom(value) {
   const room = String(value || DEFAULT_ROOM).trim();
   return room || DEFAULT_ROOM;
+}
+
+function cleanCssLength(value, fallback) {
+  const raw = String(value || "").trim();
+  if (!raw) return fallback;
+  if (/^(?:\d+(?:\.\d+)?)(?:px|vh|vw|vmin|vmax|%)$/.test(raw)) return raw;
+  if (/^\d+(?:\.\d+)?$/.test(raw)) return `${raw}px`;
+  return fallback;
+}
+
+function isPrivateIp(ip) {
+  const normalized = String(ip || "").replace(/^::ffff:/, "");
+  if (
+    normalized === "127.0.0.1" ||
+    normalized === "::1" ||
+    normalized === "localhost" ||
+    normalized.startsWith("10.") ||
+    normalized.startsWith("192.168.")
+  ) {
+    return true;
+  }
+  const parts = normalized.split(".").map((part) => Number.parseInt(part, 10));
+  return parts.length === 4 && parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31;
+}
+
+function requireLanAccess(req, res, next) {
+  if (!LAN_ONLY) return next();
+  const forwarded = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim();
+  const ip = forwarded || req.ip || req.socket.remoteAddress;
+  if (isPrivateIp(ip)) return next();
+  return res.status(403).send("Dino Run is only available on the local network.");
 }
 
 function clampLimit(value, fallback, max) {
