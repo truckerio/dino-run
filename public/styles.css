@@ -63,6 +63,10 @@ main {
   align-items: start;
 }
 
+.hero {
+  max-width: 760px;
+}
+
 h1,
 h2 {
   margin: 0 0 14px;
