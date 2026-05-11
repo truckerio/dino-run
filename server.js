@@ -55,7 +55,7 @@ app.get("/config.js", (_req, res) => {
     })};`
   );
 });
-app.get("/", (_req, res) => res.redirect(`/play?room=${DEFAULT_ROOM}`));
+app.get("/", (_req, res) => res.sendFile(path.join(publicDir, "index.html")));
 app.get("/play", (_req, res) => res.sendFile(path.join(publicDir, "play", "index.html")));
 
 app.get("/api/high-scores", (req, res) => {
