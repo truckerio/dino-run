@@ -22,8 +22,8 @@ img {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: 14px 18px;
-  border-bottom: 2px solid #111111;
+  padding: 0;
+  border-bottom: 0;
 }
 
 .logo,
@@ -50,9 +50,9 @@ img {
 }
 
 main {
-  width: min(980px, calc(100vw - 32px));
-  margin: 0 auto;
-  padding: 32px 0 48px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .hero,
