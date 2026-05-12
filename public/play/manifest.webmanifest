@@ -1,0 +1,30 @@
+{
+  "id": "/play/",
+  "name": "World Runner",
+  "short_name": "World Runner",
+  "description": "Installable Dino Run game shell for the display experience.",
+  "start_url": "/play/?room=painting-01",
+  "scope": "/play/",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/play/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/play/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/play/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
