@@ -509,9 +509,9 @@
     update(dt, runnerSpeed, frozen) {
       if (!frozen) {
         this.worldX += runnerSpeed * TUNING.background.worldSpeedMultiplier * dt;
-      this.groundOffset += runnerSpeed * TUNING.background.groundSpeedMultiplier * dt;
+        this.groundOffset += runnerSpeed * TUNING.background.groundSpeedMultiplier * dt;
+        this.updateDayNight();
       }
-      this.updateDayNight();
       this.renderGround();
       this.renderFarLayer();
       this.renderLandmarks();
@@ -995,6 +995,7 @@
 
     setDinoStillTexture(key) {
       if (this.dino.texture.key !== key) this.dino.setTexture(key);
+      this.dino.anims.stop();
       this.dino.clearTint();
     }
 

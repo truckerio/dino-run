@@ -12,7 +12,7 @@
       <nav class="site-nav" aria-label="Main navigation">
         <a href="/index.html">Home</a>
         <a href="/game.html">Game</a>
-        <a href="/about.html">About</a>
+        <a class="active" href="/about.html" aria-current="page">About</a>
       </nav>
     </header>
 
@@ -25,60 +25,34 @@
         </p>
       </section>
 
-      <section class="two-column">
-        <article>
-          <h2>Art Mode vs Play Mode</h2>
-          <p>
-            Art Mode is the painting display. It shows the QR code and runs the
-            idle demo so the screen still feels alive when nobody is playing.
-          </p>
-          <p>
-            Play Mode runs on the phone. It asks for the player's name, then the
-            player controls the same runner with touch gestures.
-          </p>
-        </article>
-
-        <article>
-          <h2>Controls</h2>
-          <table class="controls-table">
-            <thead>
-              <tr>
-                <th>Action</th>
-                <th>Phone Control</th>
-                <th>Keyboard Backup</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Jump</td>
-                <td>Tap the game</td>
-                <td>Space or Up Arrow</td>
-              </tr>
-              <tr>
-                <td>Duck</td>
-                <td>Swipe down</td>
-                <td>Down Arrow</td>
-              </tr>
-              <tr>
-                <td>Start</td>
-                <td>Enter name and press Start</td>
-                <td>Use the phone page</td>
-              </tr>
-            </tbody>
-          </table>
-        </article>
-      </section>
-
       <section class="section">
-        <h2>Small Multimedia Preview</h2>
-        <p>
-          This embedded preview shows the same live game world in a smaller frame.
-        </p>
-        <iframe
-          class="preview-frame"
-          src="/play/?room=about-preview"
-          title="Small World Runner preview"
-        ></iframe>
+        <h2>Controls</h2>
+        <table class="controls-table">
+          <thead>
+            <tr>
+              <th>Action</th>
+              <th>Phone Control</th>
+              <th>Keyboard Backup</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Jump</td>
+              <td>Tap the game</td>
+              <td>Space or Up Arrow</td>
+            </tr>
+            <tr>
+              <td>Duck</td>
+              <td>Swipe down</td>
+              <td>Down Arrow</td>
+            </tr>
+            <tr>
+              <td>Start</td>
+              <td>Enter name and press Start</td>
+              <td>Use the phone page</td>
+            </tr>
+          </tbody>
+        </table>
       </section>
     </main>
   </body>

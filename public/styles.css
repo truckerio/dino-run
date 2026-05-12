@@ -1,12 +1,24 @@
+:root {
+  --page-width: 980px;
+  --page-gap: 20px;
+  --header-height: 59px;
+  --ink: #111111;
+  --page-bg: #ffffff;
+}
+
+/* Reset */
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html,
 body {
+  min-height: 100%;
   margin: 0;
-  background: #ffffff;
-  color: #111111;
+  background: var(--page-bg);
+  color: var(--ink);
   font-family: "Courier New", Courier, monospace;
   line-height: 1.45;
   image-rendering: pixelated;
@@ -17,19 +29,20 @@ img {
   image-rendering: pixelated;
 }
 
+/* Header */
 .site-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
   padding: 14px 18px;
-  border-bottom: 2px solid #111111;
+  border-bottom: 2px solid var(--ink);
 }
 
 .logo,
 .site-nav a,
 .button {
-  color: #111111;
+  color: var(--ink);
   font-weight: 700;
   text-decoration: none;
 }
@@ -46,28 +59,20 @@ img {
 
 .site-nav a:hover,
 .site-nav a:focus {
-  text-decoration: underline;
+  opacity: 0.5;
 }
 
+.site-nav a.active,
+.site-nav a[aria-current="page"] {
+  color: gray;
+  font-weight: 800;
+}
+
+/* Shared page layout */
 main {
-  width: min(980px, calc(100vw - 32px));
+  width: min(var(--page-width), calc(100vw - 32px));
   margin: 0 auto;
-  padding: 32px 0 48px;
-}
-
-.hero,
-.two-column {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 28px;
-  align-items: start;
-}
-
-.hero {
-  display: flex;
-  min-height: 55vh;
-  max-width: 760px;
-  align-items: center;
+  padding-top: var(--page-gap);
 }
 
 h1,
@@ -77,7 +82,7 @@ h2 {
 }
 
 h1 {
-  font-size: clamp(36px, 7vw, 72px);
+  font-size: 50px;
 }
 
 h2 {
@@ -89,9 +94,23 @@ p {
   font-size: 17px;
 }
 
+.section {
+  margin-top: 28px;
+}
+
+/* Home page */
+.hero {
+  min-height: 55vh;
+}
+
+.hero-text {
+  max-width: 620px;
+  padding-top: 50px;
+}
+
 .intro-text {
   max-width: 620px;
-  font-size: clamp(22px, 4vw, 34px);
+  font-size: 25px;
   line-height: 1.25;
 }
 
@@ -103,7 +122,7 @@ p {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-  margin-top: 22px;
+  margin-top: 35px;
 }
 
 .button {
@@ -118,80 +137,67 @@ p {
 }
 
 .button.secondary {
-  background: #ffffff;
+  background: var(--page-bg);
 }
 
-.hero-image,
-.section,
-.page-title,
-.game-shell,
-.two-column article {
-  border: 2px solid #111111;
-  background: #ffffff;
-  padding: 18px;
-}
-
-.hero-image {
-  margin: 0;
-  text-align: center;
-}
-
-.hero-image img {
-  width: min(220px, 70vw);
-}
-
-figcaption {
-  margin-top: 10px;
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.section,
-.game-shell,
-.two-column {
-  margin-top: 28px;
-}
-
-.feature-list {
-  margin: 0;
-  padding-left: 22px;
-  font-size: 17px;
-}
-
-.feature-list li {
-  margin-bottom: 8px;
-}
-
+/* About page */
 .page-title {
   max-width: 780px;
 }
 
-.game-frame,
-.preview-frame {
+.game-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  min-height: calc(100vh - (var(--header-height) + var(--page-gap)));
+}
+
+.game-shell {
+  width: 100vw;
+}
+
+/* Game page */
+.game-frame {
   display: block;
   width: 100%;
-  border: 2px solid #111111;
-  background: #ffffff;
+  background: var(--page-bg);
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border: 0;
 }
 
-.game-frame {
-  height: min(70vh, 680px);
+body.game-route {
+  overflow: hidden;
 }
 
-.preview-frame {
-  height: 300px;
+body.game-route .site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  background: rgba(255, 255, 255, 0.94);
 }
 
+body.game-route main {
+  width: 100vw;
+  margin: 0;
+  padding-top: calc(var(--header-height) + var(--page-gap));
+}
+
+/* Table */
 .controls-table {
   width: 100%;
   border-collapse: collapse;
-  background: #ffffff;
+  background: var(--page-bg);
 }
 
 .controls-table th,
 .controls-table td {
   padding: 10px;
-  border: 2px solid #111111;
+  border: 2px solid var(--ink);
   text-align: left;
   vertical-align: top;
 }
@@ -200,10 +206,10 @@ figcaption {
   font-weight: 700;
 }
 
+/* Mobile */
 @media (max-width: 760px) {
   .site-header,
-  .hero,
-  .two-column {
+  .hero {
     display: block;
   }
 
@@ -211,12 +217,9 @@ figcaption {
     margin-top: 10px;
   }
 
-  .hero-image,
-  .two-column article {
-    margin-top: 20px;
-  }
-
-  .game-frame {
-    height: 520px;
+  .game-page {
+    min-height: auto;
+    align-items: flex-start;
+    padding-top: 20px;
   }
 }
