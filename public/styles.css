@@ -106,11 +106,12 @@ p {
 .hero-text {
   max-width: 620px;
   padding-top: 50px;
+  font-size:26px;
 }
 
 .intro-text {
   max-width: 620px;
-  font-size: 25px;
+  font-size: 14px;
   line-height: 1.25;
 }
 
